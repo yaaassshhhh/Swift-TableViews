@@ -25,6 +25,8 @@ var myStudentDataService : StudentDataFetcher = StudentDataService()
         tableView.delegate = self
         tableView.dataSource = self
         headerLabel.text = "Student Shortlisting Challenge"
+        headerLabel.backgroundColor = .white
+        
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
@@ -36,8 +38,10 @@ var myStudentDataService : StudentDataFetcher = StudentDataService()
             }
         }
         self.title = "WWDC 2025"
+        self.headerLabel.textColor = .black
+        self.navigationController?.navigationBar.barTintColor = .white
+        self.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.systemGray]
     }
-
 
 }
 

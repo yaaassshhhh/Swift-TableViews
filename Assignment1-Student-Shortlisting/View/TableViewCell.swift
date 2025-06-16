@@ -22,6 +22,10 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var University : UILabel!
     @IBOutlet weak var Skills : UILabel!
     
+    @IBOutlet weak var NameValue : UILabel!
+    @IBOutlet weak var GpaValue : UILabel!
+    @IBOutlet weak var UniversityValue : UILabel!
+    @IBOutlet weak var SkillsValue : UILabel!
     
     @IBOutlet weak var shortlistButton : UIButton!
 //    shortlistButton.titleLabel?.textAlignment = .center
@@ -55,21 +59,34 @@ class TableViewCell: UITableViewCell {
     
     func configure (_ data : Student ) {
         self.data = data
-        textConvertor("Name : ", data.name, Name)
+        textConvertor("Name : ", Name)
         Name.numberOfLines = 0
         Name.lineBreakMode = .byWordWrapping
+        NameValue.text! = data.name
+        NameValue.numberOfLines = 0
+        NameValue.lineBreakMode = .byWordWrapping
         
-        textConvertor("Gpa : ", "\(data.gpa)", Gpa)
+        textConvertor("Gpa : ", Gpa)
         Gpa.numberOfLines = 0
         Gpa.lineBreakMode = .byWordWrapping
+        GpaValue.text! = String(data.gpa)
+        GpaValue.numberOfLines = 0
+        GpaValue.lineBreakMode = .byWordWrapping
         
-        textConvertor("University : ", data.university, University)
+        
+        textConvertor("University : ", University)
         University.numberOfLines = 0
         University.lineBreakMode = .byWordWrapping
+        UniversityValue.text! = data.university
+        UniversityValue.numberOfLines = 0
+        UniversityValue.lineBreakMode = .byWordWrapping
         
-        textConvertor("Skills : ", data.skills, Skills)
+        textConvertor("Skills : ", Skills)
         Skills.numberOfLines = 0
         Skills.lineBreakMode = .byWordWrapping
+        SkillsValue.text! = data.skills
+        SkillsValue.numberOfLines = 0
+        SkillsValue.lineBreakMode = .byWordWrapping
         
         if data.isShortlisted  == true{
             shortlistButton.tintColor  = UIColor.systemGray
@@ -81,19 +98,20 @@ class TableViewCell: UITableViewCell {
         
     }
     
-    func textConvertor(_ lhs: String , _ rhs : String, _ lbl : UILabel) ->  Void {
+    func textConvertor(_ lhs: String ,_ lbl : UILabel) ->  Void {
         let boldAttribute = [
               NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Bold", size: 17.0)!
            ]
-           let regularAttribute = [
-              NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Light", size: 17.0)!
-           ]
+           
            let boldText = NSAttributedString(string: lhs, attributes: boldAttribute)
-           let regularText = NSAttributedString(string: rhs, attributes: regularAttribute)
            let newString = NSMutableAttributedString()
            newString.append(boldText)
-           newString.append(regularText)
            lbl.attributedText = newString
-
+        
+//        let regularAttribute = [
+//           NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Light", size: 17.0)!
+//        ]
+//        let regularText = NSAttributedString(string: rhs, attributes: regularAttribute)
+//        lblValue.text = rhs
     }
 }
