@@ -7,11 +7,34 @@
 
 import UIKit
 
-class TableViewCell: UITableViewCell {
+protocol TableViewCellDelegate:  AnyObject {
+    func shortlist(item: Student , index : IndexPath)
+}
 
+class TableViewCell: UITableViewCell {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.backgroundColor  = UIColor.white
+    }
+    
+    @IBOutlet weak var Name : UILabel!
+    @IBOutlet weak var Gpa : UILabel!
+    @IBOutlet weak var University : UILabel!
+    @IBOutlet weak var Skills : UILabel!
+    
+    
+    @IBOutlet weak var shortlistButton : UIButton!
+//    shortlistButton.titleLabel?.textAlignment = .center
+//    @IBOutlet weak var crossoffButton : UIButton!
+    
+    var delegate: TableViewCellDelegate?
+    var data: Student?
+    var index : IndexPath?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+//        // Initialization code
+//        self.selectionStyle = .none
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -20,4 +43,57 @@ class TableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    @IBAction func shortlistTapped(_ sender: UIButton)  {
+        
+        print("Shortlist tapped")
+//        self.backgroundColor  = UIColor.gray
+        if let data = self.data {
+        delegate?.shortlist(item: data , index : self.index!)
+        }
+        
+    }
+    
+    func configure (_ data : Student ) {
+        self.data = data
+        textConvertor("Name : ", data.name, Name)
+        Name.numberOfLines = 0
+        Name.lineBreakMode = .byWordWrapping
+        
+        textConvertor("Gpa : ", "\(data.gpa)", Gpa)
+        Gpa.numberOfLines = 0
+        Gpa.lineBreakMode = .byWordWrapping
+        
+        textConvertor("University : ", data.university, University)
+        University.numberOfLines = 0
+        University.lineBreakMode = .byWordWrapping
+        
+        textConvertor("Skills : ", data.skills, Skills)
+        Skills.numberOfLines = 0
+        Skills.lineBreakMode = .byWordWrapping
+        
+        if data.isShortlisted  == true{
+            shortlistButton.tintColor  = UIColor.systemGray
+            shortlistButton.setTitle("Shortlisted", for: .normal)
+        } else {
+            shortlistButton.setTitle("Shortlist", for: .normal)
+            shortlistButton.tintColor = UIColor.systemBlue
+        }
+        
+    }
+    
+    func textConvertor(_ lhs: String , _ rhs : String, _ lbl : UILabel) ->  Void {
+        let boldAttribute = [
+              NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Bold", size: 17.0)!
+           ]
+           let regularAttribute = [
+              NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Light", size: 17.0)!
+           ]
+           let boldText = NSAttributedString(string: lhs, attributes: boldAttribute)
+           let regularText = NSAttributedString(string: rhs, attributes: regularAttribute)
+           let newString = NSMutableAttributedString()
+           newString.append(boldText)
+           newString.append(regularText)
+           lbl.attributedText = newString
+
+    }
 }
