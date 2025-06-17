@@ -8,7 +8,7 @@
 import UIKit
 
 protocol TableViewCellDelegate:  AnyObject {
-    func shortlist(item: Student , index : IndexPath)
+    func shortlist(at index : IndexPath)
 }
 
 class TableViewCell: UITableViewCell {
@@ -28,8 +28,8 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var SkillsValue : UILabel!
     
     @IBOutlet weak var shortlistButton : UIButton!
-//    shortlistButton.titleLabel?.textAlignment = .center
-//    @IBOutlet weak var crossoffButton : UIButton!
+    //    shortlistButton.titleLabel?.textAlignment = .center
+    //    @IBOutlet weak var crossoffButton : UIButton!
     
     var delegate: TableViewCellDelegate?
     var data: Student?
@@ -37,22 +37,21 @@ class TableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-//        // Initialization code
-//        self.selectionStyle = .none
+        //        // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     @IBAction func shortlistTapped(_ sender: UIButton)  {
         
         print("Shortlist tapped")
-//        self.backgroundColor  = UIColor.gray
+        //        self.backgroundColor  = UIColor.gray
         if let data = self.data {
-        delegate?.shortlist(item: data , index : self.index!)
+            delegate?.shortlist(at : self.index!)
         }
         
     }
@@ -62,14 +61,14 @@ class TableViewCell: UITableViewCell {
         textConvertor("Name : ", Name)
         Name.numberOfLines = 0
         Name.lineBreakMode = .byWordWrapping
-        NameValue.text! = data.name
+        NameValue.text! = data.name!
         NameValue.numberOfLines = 0
         NameValue.lineBreakMode = .byWordWrapping
         
         textConvertor("Gpa : ", Gpa)
         Gpa.numberOfLines = 0
         Gpa.lineBreakMode = .byWordWrapping
-        GpaValue.text! = String(data.gpa)
+        GpaValue.text! = String(data.gpa!)
         GpaValue.numberOfLines = 0
         GpaValue.lineBreakMode = .byWordWrapping
         
@@ -77,14 +76,14 @@ class TableViewCell: UITableViewCell {
         textConvertor("University : ", University)
         University.numberOfLines = 0
         University.lineBreakMode = .byWordWrapping
-        UniversityValue.text! = data.university
+        UniversityValue.text! = data.university!
         UniversityValue.numberOfLines = 0
         UniversityValue.lineBreakMode = .byWordWrapping
         
         textConvertor("Skills : ", Skills)
         Skills.numberOfLines = 0
         Skills.lineBreakMode = .byWordWrapping
-        SkillsValue.text! = data.skills
+        SkillsValue.text! = data.skills!
         SkillsValue.numberOfLines = 0
         SkillsValue.lineBreakMode = .byWordWrapping
         
@@ -100,18 +99,18 @@ class TableViewCell: UITableViewCell {
     
     func textConvertor(_ lhs: String ,_ lbl : UILabel) ->  Void {
         let boldAttribute = [
-              NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Bold", size: 17.0)!
-           ]
-           
-           let boldText = NSAttributedString(string: lhs, attributes: boldAttribute)
-           let newString = NSMutableAttributedString()
-           newString.append(boldText)
-           lbl.attributedText = newString
+            NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Bold", size: 17.0)!
+        ]
         
-//        let regularAttribute = [
-//           NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Light", size: 17.0)!
-//        ]
-//        let regularText = NSAttributedString(string: rhs, attributes: regularAttribute)
-//        lblValue.text = rhs
+        let boldText = NSAttributedString(string: lhs, attributes: boldAttribute)
+        let newString = NSMutableAttributedString()
+        newString.append(boldText)
+        lbl.attributedText = newString
+        
+        //        let regularAttribute = [
+        //           NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-Light", size: 17.0)!
+        //        ]
+        //        let regularText = NSAttributedString(string: rhs, attributes: regularAttribute)
+        //        lblValue.text = rhs
     }
 }
