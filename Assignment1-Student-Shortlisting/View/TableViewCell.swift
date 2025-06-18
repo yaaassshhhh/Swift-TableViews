@@ -31,7 +31,7 @@ class TableViewCell: UITableViewCell {
     //    shortlistButton.titleLabel?.textAlignment = .center
     //    @IBOutlet weak var crossoffButton : UIButton!
     
-    var delegate: TableViewCellDelegate?
+    weak var delegate: TableViewCellDelegate?
     var data: Student?
     var index : IndexPath?
     
@@ -50,9 +50,8 @@ class TableViewCell: UITableViewCell {
         
         print("Shortlist tapped")
         //        self.backgroundColor  = UIColor.gray
-        if let data = self.data {
+      
             delegate?.shortlist(at : self.index!)
-        }
         
     }
     

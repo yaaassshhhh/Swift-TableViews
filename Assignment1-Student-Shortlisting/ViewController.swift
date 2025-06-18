@@ -20,19 +20,19 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+        setupTableView()
+        setupHeaderAndLabel()
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
-                DispatchQueue.main.async { //to run this UI updation related task on the main thread ASAP
+                DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
             } catch {
                 print("\n Bad Call :- \n \(error)")
             }
         }
-        setupTableView()
-        setupHeaderAndLabel()
+        
     }
     
     private func setupTableView(){
@@ -60,9 +60,9 @@ extension ViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? TableViewCell{
+        if let cell : TableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? TableViewCell{
             
-            let student = studentData[indexPath.row]
+            let student : Student = studentData[indexPath.row]
             cell.delegate = self
             cell.configure(student)
             cell.index = indexPath
@@ -88,8 +88,10 @@ extension ViewController: TableViewCellDelegate {
             } else {
                 print("No Name Found")
             }
-            
         }
-        tableView.reloadData()
+        DispatchQueue.main.async{
+            self.tableView.reloadData()
+        }
+       
     }
 }
