@@ -19,6 +19,19 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var sortButton: UIButton!
     
+    @IBAction func sortStudentCells(_ sender: UIButton) {
+        if sortButton.titleLabel?.text == "GPA"{
+            sender.setTitle("4-0", for: .normal)
+            studentData = studentData.sorted{ $0.gpa!  > $1.gpa!}
+            reloadTableData()
+        } else{
+            sender.setTitle("GPA", for: .normal)
+            studentData = studentData.sorted{ $0.gpa!  < $1.gpa!}
+            reloadTableData()
+        }
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -28,18 +41,24 @@ class HomeViewController: UIViewController {
         
     }
     
+    private func reloadTableData(){
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
     private func loadStudentData(){
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                reloadTableData()
             } catch {
                 print("\n Bad Call :- \n \(error)")
             }
         }
     }
+    
+   
     
     private func setupTableView(){
         self.tableView.register(UINib(nibName: "StudentTableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
@@ -88,9 +107,7 @@ extension HomeViewController: TableViewCellDelegate {
                 print("No Name Found")
             }
         }
-        DispatchQueue.main.async{
-            self.tableView.reloadData()
-        }
+        reloadTableData()
         
     }
     
