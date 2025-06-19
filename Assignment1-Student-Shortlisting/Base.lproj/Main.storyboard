@@ -29,13 +29,10 @@
                             <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="AaY-Ls-DGx" userLabel="SearchSort">
                                 <rect key="frame" x="5" y="133.33333333333334" width="379" height="56"/>
                                 <subviews>
-                                    <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="ov0-ac-lYE">
+                                    <searchBar contentMode="redraw" searchBarStyle="minimal" text="" placeholder="Enter Student Name . . ." translatesAutoresizingMaskIntoConstraints="NO" id="ov0-ac-lYE">
                                         <rect key="frame" x="0.0" y="0.0" width="289" height="56"/>
                                         <color key="barTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <textInputTraits key="textInputTraits"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="BYZ-38-t0r" id="uTa-Dj-bkF"/>
-                                        </connections>
                                     </searchBar>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SZO-2F-UJd">
                                         <rect key="frame" x="289" y="11.666666666666657" width="90" height="33"/>
@@ -75,8 +72,8 @@
                     <navigationItem key="navigationItem" id="uIm-KG-qYz"/>
                     <connections>
                         <outlet property="headerLabel" destination="FWR-ZY-ksd" id="udi-M1-nJM"/>
-                        <outlet property="searchBar" destination="ov0-ac-lYE" id="p42-qE-C9I"/>
                         <outlet property="sortButton" destination="SZO-2F-UJd" id="GrB-zG-4PC"/>
+                        <outlet property="studentSearchBar" destination="ov0-ac-lYE" id="UEP-Bn-oOC"/>
                         <outlet property="tableView" destination="l7O-ey-iEE" id="mRp-GP-8g0"/>
                     </connections>
                 </viewController>

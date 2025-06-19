@@ -11,22 +11,26 @@ class HomeViewController: UIViewController {
     
     var myStudentDataService : StudentDataFetcher = StudentDataService()
     var studentData : [Student] = []
-    
+    var filterStudent : [Student] = []
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var headerLabel : UILabel!
     
-    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var studentSearchBar: UISearchBar!
     @IBOutlet weak var sortButton: UIButton!
     
     @IBAction func sortStudentCells(_ sender: UIButton) {
         if sortButton.titleLabel?.text == "GPA"{
             sender.setTitle("4-0", for: .normal)
-            studentData = studentData.sorted{ $0.gpa!  > $1.gpa!}
+            filterStudent = filterStudent.sorted{ $0.gpa!  > $1.gpa!}
             reloadTableData()
-        } else{
-            sender.setTitle("GPA", for: .normal)
-            studentData = studentData.sorted{ $0.gpa!  < $1.gpa!}
+        } else if sortButton.titleLabel?.text == "4-0"  {
+            sender.setTitle("0-4", for: .normal)
+            filterStudent = filterStudent.sorted{ $0.gpa!  < $1.gpa!}
+            reloadTableData()
+        } else {
+            sender.setTitle("4-0", for: .normal)
+            filterStudent = filterStudent.sorted{ $0.gpa!  > $1.gpa!}
             reloadTableData()
         }
         
@@ -35,10 +39,10 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setupTableView()
-        setupHeaderAndLabel()
         loadStudentData()
-        
+        setupHeaderAndLabel()
+        setupSearchBar()
+        setupTableView()
     }
     
     private func reloadTableData(){
@@ -51,6 +55,7 @@ class HomeViewController: UIViewController {
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
+                filterStudent = studentData
                 reloadTableData()
             } catch {
                 print("\n Bad Call :- \n \(error)")
@@ -58,7 +63,7 @@ class HomeViewController: UIViewController {
         }
     }
     
-   
+    
     
     private func setupTableView(){
         self.tableView.register(UINib(nibName: "StudentTableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
@@ -66,6 +71,12 @@ class HomeViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
     }
+    
+    private func setupSearchBar() {
+        studentSearchBar.delegate = self
+        filterStudent = studentData
+    }
+    
     private func setupHeaderAndLabel() {
         headerLabel.text = "Student Shortlisting Challenge"
         headerLabel.backgroundColor = .white
@@ -82,12 +93,12 @@ extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return studentData.count
+        return filterStudent.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell : StudentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? StudentTableViewCell{
-            cell.configure(studentData[indexPath.row], delegate: self, indexPath: indexPath)
+            cell.configure(filterStudent[indexPath.row], delegate: self, indexPath: indexPath)
             return cell
         }
         return UITableViewCell()
@@ -98,10 +109,11 @@ extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
 extension HomeViewController: TableViewCellDelegate {
     
     func shortlistStudent(at index : IndexPath ) {
-        studentData[index.row].isShortlisted = !(studentData[index.row].isShortlisted ?? false)
-        if studentData[index.row].isShortlisted == true{
+        filterStudent[index.row].isShortlisted = !(filterStudent[index.row].isShortlisted ?? false)
+        updateStudentData(at: index)
+        if filterStudent[index.row].isShortlisted == true{
             
-            if let studentName = studentData[index.row].name{
+            if let studentName = filterStudent[index.row].name{
                 popupAlert(for : studentName)
             } else {
                 print("No Name Found")
@@ -111,7 +123,13 @@ extension HomeViewController: TableViewCellDelegate {
         
     }
     
-    func popupAlert(for studentName : String){
+    private func updateStudentData(at index : IndexPath){
+        if let originalIndex = studentData.firstIndex(where: { $0.id == filterStudent[index.row].id }) {
+            studentData[originalIndex].isShortlisted = filterStudent[index.row].isShortlisted
+        }
+    }
+    
+    private func popupAlert(for studentName : String){
         let refreshAlert = UIAlertController(title: "\(studentName) Shortlisted", message: "", preferredStyle: UIAlertController.Style.alert)
         
         refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
@@ -119,5 +137,20 @@ extension HomeViewController: TableViewCellDelegate {
         }))
         
         present(refreshAlert, animated: true, completion: nil)
+    }
+}
+
+extension HomeViewController : UISearchBarDelegate{
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filterStudent = []
+        if searchText.isEmpty{
+            filterStudent = studentData
+        }
+        for student in studentData {
+            if student.name?.uppercased().contains(searchText.uppercased()) ?? false{
+                filterStudent.append(student)
+            }
+        }
+        self.reloadTableData()
     }
 }

@@ -13,6 +13,7 @@ struct Response : Decodable{
 }
 
 struct Student : Decodable  {
+    var id : UUID = UUID()
     var name : String?
     var university : String?
     var gpa : Double?
