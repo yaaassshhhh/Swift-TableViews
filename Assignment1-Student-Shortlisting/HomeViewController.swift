@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
     
     var myStudentDataService : StudentDataFetcher = StudentDataService()
     var studentData : [Student] = []
@@ -16,12 +16,19 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var headerLabel : UILabel!
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var sortButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setupTableView()
         setupHeaderAndLabel()
+        loadStudentData()
+        
+    }
+    
+    private func loadStudentData(){
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
@@ -32,11 +39,11 @@ class ViewController: UIViewController {
                 print("\n Bad Call :- \n \(error)")
             }
         }
-        
     }
     
     private func setupTableView(){
-        self.tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
+        self.tableView.register(UINib(nibName: "StudentTableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
+        self.tableView.register(StudentTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -52,7 +59,7 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController : UITableViewDataSource, UITableViewDelegate {
+extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -60,31 +67,23 @@ extension ViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell : TableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? TableViewCell{
-            
-            let student : Student = studentData[indexPath.row]
-            cell.delegate = self
-            cell.configure(student)
-            cell.index = indexPath
+        if let cell : StudentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? StudentTableViewCell{
+            cell.configure(studentData[indexPath.row], delegate: self, indexPath: indexPath)
             return cell
         }
         return UITableViewCell()
     }
+    
 }
 
-extension ViewController: TableViewCellDelegate {
-    func shortlist(at index : IndexPath ) {
+extension HomeViewController: TableViewCellDelegate {
+    
+    func shortlistStudent(at index : IndexPath ) {
         studentData[index.row].isShortlisted = !(studentData[index.row].isShortlisted ?? false)
         if studentData[index.row].isShortlisted == true{
             
             if let studentName = studentData[index.row].name{
-                let refreshAlert = UIAlertController(title: "\(studentName) Shortlisted", message: "", preferredStyle: UIAlertController.Style.alert)
-                
-                refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
-                    print("Alert dipatched")
-                }))
-                
-                present(refreshAlert, animated: true, completion: nil)
+                popupAlert(for : studentName)
             } else {
                 print("No Name Found")
             }
@@ -92,6 +91,16 @@ extension ViewController: TableViewCellDelegate {
         DispatchQueue.main.async{
             self.tableView.reloadData()
         }
-       
+        
+    }
+    
+    func popupAlert(for studentName : String){
+        let refreshAlert = UIAlertController(title: "\(studentName) Shortlisted", message: "", preferredStyle: UIAlertController.Style.alert)
+        
+        refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            print("Alert dipatched")
+        }))
+        
+        present(refreshAlert, animated: true, completion: nil)
     }
 }

@@ -8,40 +8,72 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Home View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Assignment1_Student_Shortlisting" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="HomeViewController" customModule="Assignment1_Student_Shortlisting" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="l7O-ey-iEE">
-                                <rect key="frame" x="0.0" y="129" width="393" height="689"/>
+                                <rect key="frame" x="0.0" y="188.33333333333331" width="393" height="629.66666666666674"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FWR-ZY-ksd">
-                                <rect key="frame" x="0.0" y="103" width="393" height="21"/>
+                                <rect key="frame" x="0.0" y="103" width="393" height="20.333333333333329"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="AaY-Ls-DGx" userLabel="SearchSort">
+                                <rect key="frame" x="5" y="133.33333333333334" width="379" height="56"/>
+                                <subviews>
+                                    <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="ov0-ac-lYE">
+                                        <rect key="frame" x="0.0" y="0.0" width="289" height="56"/>
+                                        <color key="barTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="uTa-Dj-bkF"/>
+                                        </connections>
+                                    </searchBar>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SZO-2F-UJd">
+                                        <rect key="frame" x="289" y="11.666666666666657" width="90" height="33"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="33" id="mGI-da-jZF"/>
+                                            <constraint firstAttribute="width" constant="90" id="pEr-DB-pZb"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Button"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="100"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="l7O-ey-iEE" firstAttribute="top" secondItem="FWR-ZY-ksd" secondAttribute="bottom" constant="5" id="E9a-23-vqK"/>
+                            <constraint firstItem="l7O-ey-iEE" firstAttribute="top" secondItem="FWR-ZY-ksd" secondAttribute="bottom" constant="65" id="1HP-pL-Zma"/>
                             <constraint firstItem="FWR-ZY-ksd" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Gpy-Gi-Ouv"/>
                             <constraint firstItem="FWR-ZY-ksd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="POa-Ss-JAa"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="AaY-Ls-DGx" secondAttribute="trailing" constant="9" id="Wd6-4Y-CZX"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="l7O-ey-iEE" secondAttribute="trailing" id="cLn-Qr-KSG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="FWR-ZY-ksd" secondAttribute="trailing" id="cba-rI-fM4"/>
+                            <constraint firstItem="AaY-Ls-DGx" firstAttribute="top" secondItem="FWR-ZY-ksd" secondAttribute="bottom" constant="10" id="f2U-Ur-hQd"/>
                             <constraint firstItem="l7O-ey-iEE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gnB-yJ-P71"/>
+                            <constraint firstItem="AaY-Ls-DGx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="5" id="l8r-tD-oMJ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="l7O-ey-iEE" secondAttribute="bottom" id="nZe-Ex-toh"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="uIm-KG-qYz"/>
                     <connections>
                         <outlet property="headerLabel" destination="FWR-ZY-ksd" id="udi-M1-nJM"/>
+                        <outlet property="searchBar" destination="ov0-ac-lYE" id="p42-qE-C9I"/>
+                        <outlet property="sortButton" destination="SZO-2F-UJd" id="GrB-zG-4PC"/>
                         <outlet property="tableView" destination="l7O-ey-iEE" id="mRp-GP-8g0"/>
                     </connections>
                 </viewController>

@@ -14,11 +14,13 @@ class StudentDataService : StudentDataFetcher{
         guard let url : URL = URL(string : urlString) else {
             throw URLError(.badURL)
         }
+        return try await getResponseData(for : url).students
+    }
+    
+    func getResponseData(for url : URL) async throws -> Response {
         
-        let (data ,  _ ) = try await URLSession.shared.data(from: url)
+        let (data , _) = try await URLSession.shared.data(from: url)
         let decodedResponse : Response = try JSONDecoder().decode(Response.self , from : data)
-        //JSONDecoder is used to convert the json data into Swift object of Response type
-        
-        return decodedResponse.students
+        return decodedResponse
     }
 }
