@@ -9,9 +9,12 @@ import UIKit
 
 protocol TableViewCellDelegate:  AnyObject {
     func shortlistStudent(at index : IndexPath)
+    func presentShareProfileActivity(at index : IndexPath , for url : URL , of name : String , activityController : UIActivityViewController)
 }
 
 class StudentTableViewCell: UITableViewCell {
+    
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.backgroundColor  = UIColor.white
@@ -27,21 +30,30 @@ class StudentTableViewCell: UITableViewCell {
     @IBOutlet weak var UniversityValue : UILabel!
     @IBOutlet weak var SkillsValue : UILabel!
     
+    @IBOutlet weak var sharePopUpButton: UIButton!
     @IBOutlet weak var shortlistButton : UIButton!
+    
     
     private weak var delegate: TableViewCellDelegate?
     private  var data: Student?
     private var index : IndexPath?
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
-    }
+    //    override func awakeFromNib() {
+    //        super.awakeFromNib()
+    //        print("awakeFromNib triggered")
+    //        print("Button Frame: \(sharePopUpButton.frame)")
+    //
+    //    }
+    
+    //    override func setSelected(_ selected: Bool, animated: Bool) {
+    //        super.setSelected(selected, animated: animated)
+    //
+    //        setSharePopUpButton()
+    //    }
     
     @IBAction func shortlistTapped(_ sender: UIButton)  {
         print("Shortlist tapped")
-        delegate?.shortlistStudent(at : self.index!)        
+        delegate?.shortlistStudent(at : self.index!)
     }
     
     
@@ -56,9 +68,53 @@ class StudentTableViewCell: UITableViewCell {
         configureLabelStyle(Skills, SkillsValue)
         
         configureButtonStyle()
+        setSharePopUpButton()
         
     }
     
+    func setSharePopUpButton(){
+        configureSharePopUpButton()
+        let githubImage = UIImage(named: "github")
+        let profileImage = UIImage(named: "contact")
+        guard var name = self.data?.name as? String else { return }
+        name = name.replacingOccurrences(of: " ", with: "")
+        guard let url = URL(string: "https://github.com/\(name)") else { return }
+        
+        let shareSelected = {(action : UIAction) in
+            print("Profile Share Selected")
+            let message  = ["Github Profile :\(url)" , "Check out this profile : \(name)"]
+            let ac = UIActivityViewController(activityItems : message, applicationActivities: nil)
+            self.delegate?.presentShareProfileActivity(at: self.index!, for: url ,of: name, activityController: ac)
+        }
+        let githubProfileSelected = {(action : UIAction) in
+            UIApplication.shared.open(url ){ accepted in
+                print(accepted ? "Success" : "Failure")
+            }
+        }
+        
+        sharePopUpButton.menu = UIMenu(
+            children : [
+                UIAction(title : "View Github", image: githubImage, handler: githubProfileSelected ),
+                UIAction(title : "Share Profile", image: profileImage, handler:shareSelected)
+            ]
+        )
+        
+    }
+    
+    private func whiteSpaceRemover(text : String?) -> String? {
+        guard let text = text else { return nil }
+        return text.replacingOccurrences(of: " ", with: "")
+    }
+    
+    private func configureSharePopUpButton(){
+        sharePopUpButton.isHidden = false
+        sharePopUpButton.isEnabled = true
+        sharePopUpButton.setTitle("More", for: .normal)
+        sharePopUpButton.setTitleColor(.systemBlue, for: .normal)
+        sharePopUpButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        sharePopUpButton.showsMenuAsPrimaryAction = true
+        sharePopUpButton.changesSelectionAsPrimaryAction = false
+    }
     
     private func configureButtonStyle() {
         if data?.isShortlisted  == true{

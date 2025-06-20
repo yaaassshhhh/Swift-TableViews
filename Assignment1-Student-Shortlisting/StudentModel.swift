@@ -29,7 +29,5 @@ struct Student : Decodable  {
 }
 
 
-protocol StudentDataFetcher {
-    func fetchStudentData() async throws -> [Student]
-}
+
 

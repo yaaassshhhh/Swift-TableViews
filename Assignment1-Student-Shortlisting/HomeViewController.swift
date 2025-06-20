@@ -107,6 +107,12 @@ extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
 }
 
 extension HomeViewController: TableViewCellDelegate {
+    func presentShareProfileActivity(at index: IndexPath, for url: URL,  of name  : String , activityController: UIActivityViewController) {
+        present(activityController, animated: true, completion: {
+            print("\(name) Profile Shared Successfully")
+        })
+    }
+    
     
     func shortlistStudent(at index : IndexPath ) {
         filterStudent[index.row].isShortlisted = !(filterStudent[index.row].isShortlisted ?? false)

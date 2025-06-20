@@ -4,6 +4,8 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="UIMenu" message="Requires Xcode 11 or later." minToolsVersion="11.0" requiredIntegratedClassName="UICommandDiff"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -35,13 +37,13 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Yn-oM-l8p">
-                                                <rect key="frame" x="100" y="0.0" width="107" height="25"/>
+                                                <rect key="frame" x="100" y="0.0" width="42" height="25"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="center" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="xTO-Up-yNL">
-                                                <rect key="frame" x="212" y="0.0" width="90" height="25"/>
+                                                <rect key="frame" x="147" y="0.0" width="90" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="90" id="atG-ck-Vpj"/>
                                                     <constraint firstAttribute="height" constant="25" id="r2c-sF-y2J"/>
@@ -49,6 +51,7 @@
                                                 <buttonConfiguration key="configuration" style="filled">
                                                     <attributedString key="attributedTitle"/>
                                                     <directionalEdgeInsets key="contentInsets" top="0.0" leading="0.0" bottom="0.0" trailing="0.0"/>
+                                                    <color key="baseBackgroundColor" name="AccentColor"/>
                                                 </buttonConfiguration>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -58,6 +61,22 @@
                                                 <connections>
                                                     <action selector="shortlistTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OCv-Nf-sae"/>
                                                 </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" showsMenuAsPrimaryAction="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="48h-wm-3W0">
+                                                <rect key="frame" x="242" y="0.0" width="60" height="25"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="0s4-KG-WC2"/>
+                                                </constraints>
+                                                <inset key="contentEdgeInsets" minX="0.0" minY="2" maxX="0.0" maxY="0.0"/>
+                                                <menu key="menu" title="More" id="Oi8-kK-zMG">
+                                                    <children>
+                                                        <command title="View Github" id="qhU-Yn-nPr"/>
+                                                        <command title="Share Profile" id="eIj-PH-ycw"/>
+                                                    </children>
+                                                </menu>
+                                                <state key="normal" title="More">
+                                                    <color key="titleColor" systemColor="tintColor"/>
+                                                </state>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -160,9 +179,18 @@
                 <outlet property="SkillsValue" destination="aY3-Hq-eEx" id="8oA-So-8VL"/>
                 <outlet property="University" destination="y6W-VT-Grj" id="XbD-8W-f2Q"/>
                 <outlet property="UniversityValue" destination="vwL-CS-TuO" id="mZv-hI-9wI"/>
+                <outlet property="sharePopUpButton" destination="48h-wm-3W0" id="uEL-W4-dAA"/>
                 <outlet property="shortlistButton" destination="xTO-Up-yNL" id="27C-oa-zPk"/>
             </connections>
             <point key="canvasLocation" x="235" y="116"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="tintColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>
