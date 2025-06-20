@@ -54,6 +54,7 @@ class StudentTableViewCell: UITableViewCell {
     @IBAction func shortlistTapped(_ sender: UIButton)  {
         print("Shortlist tapped")
         delegate?.shortlistStudent(at : self.index!)
+//        configureButtonStyle()
     }
     
     
@@ -119,6 +120,9 @@ class StudentTableViewCell: UITableViewCell {
     private func configureButtonStyle() {
         if data?.isShortlisted  == true{
             shortlistButton.tintColor  = UIColor.systemGray
+//            shortlistButton.backgroundColor = UIColor.systemGray6
+
+            print("\n \n Reaching here \n \n")
             shortlistButton.setTitle("Shortlisted", for: .normal)
         } else {
             shortlistButton.setTitle("Shortlist", for: .normal)

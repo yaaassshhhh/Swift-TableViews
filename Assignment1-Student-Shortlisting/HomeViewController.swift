@@ -136,6 +136,7 @@ extension HomeViewController: TableViewCellDelegate {
     }
     
     private func popupAlert(for studentName : String){
+        
         let refreshAlert = UIAlertController(title: "\(studentName) Shortlisted", message: "", preferredStyle: UIAlertController.Style.alert)
         
         refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
