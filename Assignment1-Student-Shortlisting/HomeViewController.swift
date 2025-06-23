@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 class HomeViewController: UIViewController {
     
@@ -13,7 +14,9 @@ class HomeViewController: UIViewController {
     var studentData : [Student] = []
     var filterStudent : [Student] = []
     
+    
     @IBOutlet weak var tableView: UITableView!
+  
     @IBOutlet weak var headerLabel : UILabel!
     
     @IBOutlet weak var studentSearchBar: UISearchBar!
@@ -39,11 +42,13 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        loadStudentData()
+        setupTableView()
         setupHeaderAndLabel()
         setupSearchBar()
-        setupTableView()
+        loadStudentData()
     }
+    
+
     
     private func reloadTableData(){
         DispatchQueue.main.async {
@@ -52,10 +57,15 @@ class HomeViewController: UIViewController {
     }
     
     private func loadStudentData(){
+        let gradient = SkeletonGradient(baseColor: UIColor.silver)
+        tableView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: nil, transition: .crossDissolve(0.50))
         Task{
             do {
                 studentData = try await myStudentDataService.fetchStudentData()
                 filterStudent = studentData
+
+                self.tableView.stopSkeletonAnimation()
+                self.view.hideSkeleton(reloadDataAfter: true)
                 reloadTableData()
             } catch {
                 print("\n Bad Call :- \n \(error)")
@@ -66,8 +76,8 @@ class HomeViewController: UIViewController {
     
     
     private func setupTableView(){
+        tableView.isSkeletonable = true
         self.tableView.register(UINib(nibName: "StudentTableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
-        self.tableView.register(StudentTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -89,12 +99,20 @@ class HomeViewController: UIViewController {
     
 }
 
-extension HomeViewController : UITableViewDataSource, UITableViewDelegate {
+extension HomeViewController : SkeletonTableViewDataSource, UITableViewDelegate {
     
-    
+    func collectionSkeletonView(_ skeletonView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 4
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filterStudent.count
     }
+    
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        return "studentTableViewCell"
+    }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell : StudentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? StudentTableViewCell{

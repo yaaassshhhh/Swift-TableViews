@@ -32,6 +32,8 @@ class StudentTableViewCell: UITableViewCell {
     
     @IBOutlet weak var sharePopUpButton: UIButton!
     @IBOutlet weak var shortlistButton : UIButton!
+    @IBOutlet weak var universityHeigh :  NSLayoutConstraint!
+    @IBOutlet weak var nameValyeHeight :  NSLayoutConstraint!
     
     
     private weak var delegate: TableViewCellDelegate?
@@ -70,7 +72,18 @@ class StudentTableViewCell: UITableViewCell {
         
         configureButtonStyle()
         setSharePopUpButton()
-        
+        configureLabelValueHeight()
+    }
+    
+    private func configureLabelValueHeight(){
+        nameValyeHeight?.isActive = false
+        nameValyeHeight?.constant = NameValue.systemLayoutSizeFitting(CGSize(
+            width: NameValue.frame.width, height: UIView.layoutFittingExpandedSize.height)).height
+        nameValyeHeight?.isActive = true
+        universityHeigh?.isActive = false
+        universityHeigh?.constant = UniversityValue.systemLayoutSizeFitting(CGSize(width:  UniversityValue.frame.width, height:  UIView.layoutFittingExpandedSize.height)).height
+        universityHeigh?.isActive = true
+        self.layoutIfNeeded()
     }
     
     func setSharePopUpButton(){
@@ -136,24 +149,26 @@ class StudentTableViewCell: UITableViewCell {
         guard let text : String = labelKey.text else { return }
         textConvertor(text, labelKey)
         labelKey.numberOfLines = 0
-        labelKey.lineBreakMode = .byWordWrapping
+        labelKey.lineBreakMode = .byCharWrapping
+        labelValue.numberOfLines = 0
         
         switch text {
         case "Name: " :
             labelValue.text = data?.name!
+            labelValue.lineBreakMode = .byCharWrapping
             break
         case "Gpa: " :
             labelValue.text = String(format : "%.2f",data?.gpa ?? 0.0)
+            labelValue.lineBreakMode = .byCharWrapping
         case "University: " :
             labelValue.text = data?.university!
+            labelValue.lineBreakMode = .byWordWrapping
         case "Skills: " :
             labelValue.text = data?.skills!
+            labelValue.lineBreakMode = .byWordWrapping
         default :
             break
         }
-        
-        labelValue.numberOfLines = 0
-        labelValue.lineBreakMode = .byWordWrapping
     }
     
     
