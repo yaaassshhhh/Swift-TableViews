@@ -7,70 +7,57 @@
 
 import UIKit
 
-protocol TableViewCellDelegate:  AnyObject {
-    func shortlistStudent(at index : IndexPath)
-    func presentShareProfileActivity(at index : IndexPath , for url : URL , of name : String , activityController : UIActivityViewController)
+protocol TableViewCellDelegate: AnyObject {
+    func shortlistStudent(_ shouldPopup : Bool, for studentName : String)
+    func presentShareProfileActivity(for url : URL, activityController : UIActivityViewController)
 }
 
 class StudentTableViewCell: UITableViewCell {
-    
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.backgroundColor  = UIColor.white
     }
     
-    @IBOutlet weak var Name : UILabel!
-    @IBOutlet weak var Gpa : UILabel!
-    @IBOutlet weak var University : UILabel!
-    @IBOutlet weak var Skills : UILabel!
+    @IBOutlet weak var Name: UILabel!
+    @IBOutlet weak var Gpa: UILabel!
+    @IBOutlet weak var University: UILabel!
+    @IBOutlet weak var Skills: UILabel!
     
-    @IBOutlet weak var NameValue : UILabel!
-    @IBOutlet weak var GpaValue : UILabel!
-    @IBOutlet weak var UniversityValue : UILabel!
-    @IBOutlet weak var SkillsValue : UILabel!
+    @IBOutlet weak var NameValue: UILabel!
+    @IBOutlet weak var GpaValue: UILabel!
+    @IBOutlet weak var UniversityValue: UILabel!
+    @IBOutlet weak var SkillsValue: UILabel!
     
     @IBOutlet weak var sharePopUpButton: UIButton!
-    @IBOutlet weak var shortlistButton : UIButton!
-    @IBOutlet weak var universityHeigh :  NSLayoutConstraint!
-    @IBOutlet weak var nameValyeHeight :  NSLayoutConstraint!
+    @IBOutlet weak var shortlistButton: UIButton!
+    @IBOutlet weak var universityHeigh: NSLayoutConstraint!
+    @IBOutlet weak var nameValyeHeight: NSLayoutConstraint!
     
     
     private weak var delegate: TableViewCellDelegate?
-    private  var data: Student?
-    private var index : IndexPath?
     
-    //    override func awakeFromNib() {
-    //        super.awakeFromNib()
-    //        print("awakeFromNib triggered")
-    //        print("Button Frame: \(sharePopUpButton.frame)")
-    //
-    //    }
+    private var index: IndexPath?
+    private var cellVM: StudentCellViewModel?
     
-    //    override func setSelected(_ selected: Bool, animated: Bool) {
-    //        super.setSelected(selected, animated: animated)
-    //
-    //        setSharePopUpButton()
-    //    }
-    
-    @IBAction func shortlistTapped(_ sender: UIButton)  {
+    @IBAction func shortlistTapped( _ sender: UIButton ){
         print("Shortlist tapped")
-        delegate?.shortlistStudent(at : self.index!)
-//        configureButtonStyle()
+        self.cellVM?.isShortlisted.toggle()
+        delegate?.shortlistStudent((self.cellVM?.isShortlisted ?? false), for: (self.cellVM?.student.name ?? ""))
+        configureShortlistButtonStyle()
     }
     
     
-    func configure (_ data : Student , delegate : TableViewCellDelegate, indexPath : IndexPath ) {
-        self.index = indexPath
+    func configure (_ data : StudentCellViewModel, delegate: TableViewCellDelegate?) {
+        
+        self.cellVM = data
         self.delegate = delegate
-        self.data = data
         
         configureLabelStyle(Name, NameValue)
         configureLabelStyle(Gpa, GpaValue)
         configureLabelStyle(University, UniversityValue)
         configureLabelStyle(Skills, SkillsValue)
         
-        configureButtonStyle()
+        configureShortlistButtonStyle()
         setSharePopUpButton()
         configureLabelValueHeight()
     }
@@ -90,34 +77,27 @@ class StudentTableViewCell: UITableViewCell {
         configureSharePopUpButton()
         let githubImage = UIImage(named: "github")
         let profileImage = UIImage(named: "contact")
-        guard var name = self.data?.name as? String else { return }
-        name = name.replacingOccurrences(of: " ", with: "")
-        guard let url = URL(string: "https://github.com/\(name)") else { return }
-        
-        let shareSelected = {(action : UIAction) in
+        guard let url = self.cellVM?.genURL else { return }
+        let shareProfileSelected = {(action : UIAction) in
             print("Profile Share Selected")
-            let message  = ["Github Profile :\(url)" , "Check out this profile : \(name)"]
+            let message  = ["Github Profile :\(url)" , "Check out this profile : \(self.cellVM?.name ?? "")"]
+            print(message)
             let ac = UIActivityViewController(activityItems : message, applicationActivities: nil)
-            self.delegate?.presentShareProfileActivity(at: self.index!, for: url ,of: name, activityController: ac)
+            
+            self.delegate?.presentShareProfileActivity(for: url , activityController: ac)
         }
-        let githubProfileSelected = {(action : UIAction) in
+        let viewGithubSelected = {(action : UIAction) in
             UIApplication.shared.open(url ){ accepted in
                 print(accepted ? "Success" : "Failure")
             }
         }
         
         sharePopUpButton.menu = UIMenu(
-            children : [
-                UIAction(title : "View Github", image: githubImage, handler: githubProfileSelected ),
-                UIAction(title : "Share Profile", image: profileImage, handler:shareSelected)
+            children: [
+                UIAction(title: "View Github", image: githubImage, handler: viewGithubSelected ),
+                UIAction(title: "Share Profile", image: profileImage, handler: shareProfileSelected)
             ]
         )
-        
-    }
-    
-    private func whiteSpaceRemover(text : String?) -> String? {
-        guard let text = text else { return nil }
-        return text.replacingOccurrences(of: " ", with: "")
     }
     
     private func configureSharePopUpButton(){
@@ -130,15 +110,13 @@ class StudentTableViewCell: UITableViewCell {
         sharePopUpButton.changesSelectionAsPrimaryAction = false
     }
     
-    private func configureButtonStyle() {
-        if data?.isShortlisted  == true{
-            shortlistButton.tintColor  = UIColor.systemGray
-//            shortlistButton.backgroundColor = UIColor.systemGray6
-
+    private func configureShortlistButtonStyle(){
+        if cellVM?.isShortlisted == true{
+            shortlistButton.tintColor = UIColor.systemGray
             print("\n \n Reaching here \n \n")
-            shortlistButton.setTitle("Shortlisted", for: .normal)
+            shortlistButton.setTitle( "Shortlisted", for: .normal )
         } else {
-            shortlistButton.setTitle("Shortlist", for: .normal)
+            shortlistButton.setTitle( "Shortlist", for: .normal )
             shortlistButton.tintColor = UIColor.systemBlue
         }
     }
@@ -154,17 +132,17 @@ class StudentTableViewCell: UITableViewCell {
         
         switch text {
         case "Name: " :
-            labelValue.text = data?.name!
+            labelValue.text = cellVM?.name
             labelValue.lineBreakMode = .byCharWrapping
             break
         case "Gpa: " :
-            labelValue.text = String(format : "%.2f",data?.gpa ?? 0.0)
+            labelValue.text = String(format : "%.2f",cellVM?.gpa ?? 0.0)
             labelValue.lineBreakMode = .byCharWrapping
         case "University: " :
-            labelValue.text = data?.university!
+            labelValue.text = cellVM?.university
             labelValue.lineBreakMode = .byWordWrapping
         case "Skills: " :
-            labelValue.text = data?.skills!
+            labelValue.text = cellVM?.skills
             labelValue.lineBreakMode = .byWordWrapping
         default :
             break

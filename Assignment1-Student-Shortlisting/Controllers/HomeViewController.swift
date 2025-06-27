@@ -8,15 +8,18 @@
 import UIKit
 import SkeletonView
 
+protocol HomeViewControllerDelegate: AnyObject {
+    func loadTableData()
+}
 class HomeViewController: UIViewController {
+
     
-    var myStudentDataService : StudentDataFetcher = StudentDataService()
-    var studentData : [Student] = []
-    var filterStudent : [Student] = []
+    
+    var homeVM : HomeViewModel = HomeViewModel()
     
     
     @IBOutlet weak var tableView: UITableView!
-  
+    
     @IBOutlet weak var headerLabel : UILabel!
     
     @IBOutlet weak var studentSearchBar: UISearchBar!
@@ -25,15 +28,16 @@ class HomeViewController: UIViewController {
     @IBAction func sortStudentCells(_ sender: UIButton) {
         if sortButton.titleLabel?.text == "GPA"{
             sender.setTitle("4-0", for: .normal)
-            filterStudent = filterStudent.sorted{ $0.gpa!  > $1.gpa!}
+            homeVM.sortByGpaDesc()
             reloadTableData()
         } else if sortButton.titleLabel?.text == "4-0"  {
             sender.setTitle("0-4", for: .normal)
-            filterStudent = filterStudent.sorted{ $0.gpa!  < $1.gpa!}
+            homeVM.sortByGpaAsc()
             reloadTableData()
         } else {
             sender.setTitle("4-0", for: .normal)
-            filterStudent = filterStudent.sorted{ $0.gpa!  > $1.gpa!}
+            
+            homeVM.sortByGpaDesc()
             reloadTableData()
         }
         
@@ -47,9 +51,7 @@ class HomeViewController: UIViewController {
         setupSearchBar()
         loadStudentData()
     }
-    
 
-    
     private func reloadTableData(){
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -57,24 +59,23 @@ class HomeViewController: UIViewController {
     }
     
     private func loadStudentData(){
-        let gradient = SkeletonGradient(baseColor: UIColor.silver)
-        tableView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: nil, transition: .crossDissolve(0.50))
-        Task{
-            do {
-                studentData = try await myStudentDataService.fetchStudentData()
-                filterStudent = studentData
-
-                self.tableView.stopSkeletonAnimation()
-                self.view.hideSkeleton(reloadDataAfter: true)
-                reloadTableData()
-            } catch {
-                print("\n Bad Call :- \n \(error)")
+        self.showSkeleton()
+        self.homeVM.loadStudentData(delegate : self)
+            DispatchQueue.main.async(){
+                self.hideSkeleton()
+                self.reloadTableData()
             }
         }
+    
+    private func showSkeleton(){
+        let gradient = SkeletonGradient(baseColor: UIColor.silver)
+        tableView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: nil, transition: .crossDissolve(0.50))
     }
     
-    
-    
+    private func hideSkeleton(){
+        self.tableView.stopSkeletonAnimation()
+        self.view.hideSkeleton(reloadDataAfter: true)
+    }
     private func setupTableView(){
         tableView.isSkeletonable = true
         self.tableView.register(UINib(nibName: "StudentTableViewCell", bundle: nil), forCellReuseIdentifier: "studentTableViewCell")
@@ -84,7 +85,6 @@ class HomeViewController: UIViewController {
     
     private func setupSearchBar() {
         studentSearchBar.delegate = self
-        filterStudent = studentData
     }
     
     private func setupHeaderAndLabel() {
@@ -102,21 +102,20 @@ class HomeViewController: UIViewController {
 extension HomeViewController : SkeletonTableViewDataSource, UITableViewDelegate {
     
     func collectionSkeletonView(_ skeletonView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 5
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filterStudent.count
+        return homeVM.numberOfRows(inSection: section)
     }
     
     func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
         return "studentTableViewCell"
     }
-
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell : StudentTableViewCell = tableView.dequeueReusableCell(withIdentifier: "studentTableViewCell", for: indexPath) as? StudentTableViewCell{
-            cell.configure(filterStudent[indexPath.row], delegate: self, indexPath: indexPath)
+            cell.configure(homeVM.getStudentCellViewModel(at: indexPath), delegate: self)
             return cell
         }
         return UITableViewCell()
@@ -124,58 +123,44 @@ extension HomeViewController : SkeletonTableViewDataSource, UITableViewDelegate 
     
 }
 
-extension HomeViewController: TableViewCellDelegate {
-    func presentShareProfileActivity(at index: IndexPath, for url: URL,  of name  : String , activityController: UIActivityViewController) {
+extension HomeViewController : TableViewCellDelegate {
+    
+    func presentShareProfileActivity( for url: URL, activityController: UIActivityViewController) {
         present(activityController, animated: true, completion: {
-            print("\(name) Profile Shared Successfully")
+            print("Profile Shared Successfully")
         })
     }
     
     
-    func shortlistStudent(at index : IndexPath ) {
-        filterStudent[index.row].isShortlisted = !(filterStudent[index.row].isShortlisted ?? false)
-        updateStudentData(at: index)
-        if filterStudent[index.row].isShortlisted == true{
-            
-            if let studentName = filterStudent[index.row].name{
-                popupAlert(for : studentName)
-            } else {
-                print("No Name Found")
-            }
+    func shortlistStudent(_ shouldPopup : Bool , for studentName : String) {
+
+        if shouldPopup{
+            self.popupAlert(for : studentName)
+        } else {
+            print("No Name Found")
         }
         reloadTableData()
-        
-    }
-    
-    private func updateStudentData(at index : IndexPath){
-        if let originalIndex = studentData.firstIndex(where: { $0.id == filterStudent[index.row].id }) {
-            studentData[originalIndex].isShortlisted = filterStudent[index.row].isShortlisted
-        }
     }
     
     private func popupAlert(for studentName : String){
         
         let refreshAlert = UIAlertController(title: "\(studentName) Shortlisted", message: "", preferredStyle: UIAlertController.Style.alert)
-        
-        refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+        refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: {(action: UIAlertAction!) in
             print("Alert dipatched")
         }))
-        
         present(refreshAlert, animated: true, completion: nil)
     }
 }
 
 extension HomeViewController : UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filterStudent = []
-        if searchText.isEmpty{
-            filterStudent = studentData
-        }
-        for student in studentData {
-            if student.name?.uppercased().contains(searchText.uppercased()) ?? false{
-                filterStudent.append(student)
-            }
-        }
+        homeVM.initializeSearch(for: searchText)
+        self.reloadTableData()
+    }
+}
+
+extension HomeViewController : HomeViewControllerDelegate{
+    func loadTableData() {
         self.reloadTableData()
     }
 }
