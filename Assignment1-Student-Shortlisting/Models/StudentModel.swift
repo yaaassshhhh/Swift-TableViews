@@ -18,7 +18,7 @@ struct Student : Decodable  {
     var university : String?
     var gpa : Double?
     var skills : String?
-    var isShortlisted : Bool?  = false
+//    var isShortlisted : Bool?  = false
     
     enum CodingKeys : String, CodingKey {
         case name = "name"
